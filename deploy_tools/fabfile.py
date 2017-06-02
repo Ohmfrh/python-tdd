@@ -1,14 +1,15 @@
 from fabric.contrib.files import append, exists, sed
 from fabric.api import env, local, run
+import random
 
 REPO_URL = 'https://github.com/Ohmfrh/python-tdd'
 
 def deploy():
     site_folder = f'/home/{env.user}/sites/{env.host}'
-    source_folder = stie_folder + '/source'
+    source_folder = site_folder + '/source'
     _create_directory_structure_if_necessary(site_folder)
     _get_latest_source(source_folder)
-    _update_settings(rouce_folder, env.host)
+    _update_settings(source_folder, env.host)
     _update_virtualenv(source_folder)
     _update_static_files(source_folder)
     _update_database(source_folder)
@@ -19,7 +20,7 @@ def _create_directory_structure_if_necessary(site_folder):
         run(f'mkdir -p {site_folder}/{subfolder}')
 
 
-def _get_latest_rouce(source_folder):
+def _get_latest_source(source_folder):
     if exists(source_folder + '/.git'):
         run(f'cd {source_folder}  && git fetch')
     else:
@@ -38,18 +39,19 @@ def _update_settings(source_folder, site_name):
     if not exists(secret_key_file):
         chars = 'abcdefghijklmnopqrstuvwxyz123456789!@#$%^&(-_=+'
         key = ''.join(random.SystemRandom().choice(chars) for _ in range(50))
-        append(secret_key_file, f"SECRET_KEY = {key}")
+        append(secret_key_file, f"SECRET_KEY = '{key}'")
     append(settings_path, '\nfrom .secret_key import SECRET_KEY')
 
 def _update_virtualenv(source_folder):
-    virtualenv_folder = 'source_folder' + '../virtualenv'
+    virtualenv_folder = source_folder + '/../virtualenv'
+    print(f"VIRTUALENV: {virtualenv_folder}")
     if not exists(virtualenv_folder + '/bin/pip'):
         run(f'virtualenv -ppython3.6 {virtualenv_folder}')
-    run(f'{virtualenv_folder}/bin/pip install -r {source_folder} requirements.txt')
+    run(f'{virtualenv_folder}/bin/pip install -r {source_folder}/requirements.txt')
 
 def _update_static_files(source_folder):
-    run(f'cd {source_folder} && ../virtualenv/bin/python manage.py collectstatic --noinput')
+    run(f'cd {source_folder} && ../virtualenv/bin/python3 manage.py collectstatic --noinput')
 
 def _update_database(source_folder):
-    run(f'cd {source_folder} && ../virtualenv/bin/python manage.py migrate --noinput')
+    run(f'cd {source_folder} && ../virtualenv/bin/python3 manage.py migrate --noinput')
 
