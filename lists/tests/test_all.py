@@ -6,7 +6,7 @@ from django.http import HttpRequest
 from django.template.loader import render_to_string
 
 from lists.views import home_page
-from .models import Item, List
+from lists.models import Item, List
 
 
 class HomePageTest(TestCase):
