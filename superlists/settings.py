@@ -22,9 +22,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)) + '..')
 SECRET_KEY = 'zolbzp3@8ue)wu78%ke10@&hy%@3dxs8h(l8j5+g(wu8m&@lor'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['tdd-staging.danielcastro.tech']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
