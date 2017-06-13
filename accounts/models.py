@@ -23,7 +23,7 @@ class ListUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     # REQUIRED_FIELS = ['email', 'height']
 
-    # objects = ListUserManager()
+    objects = ListUserManager()
 
     @property
     def is_staff(self):
