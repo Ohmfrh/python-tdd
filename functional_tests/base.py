@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import unittest
@@ -27,23 +28,13 @@ def wait(fn):
 
 class FunctionalTest(StaticLiveServerTestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        for arg in sys.argv:
-            if 'liveserver' in arg:
-                cls.server_url = 'http://' + arg.split('=')[1]
-                return
-        super().setUpClass()
-        cls.server_url = cls.live_server_url
-
-    @classmethod
-    def tearDownClass(cls):
-        if cls.server_url == cls.live_server_url:
-            super().tearDownClass()
-
     def setUp(self):
         self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(3)
+        staging_server = os.environ.get('STAGING_SERVER')
+        print(f'Staging Server: {staging_server}')
+        if staging_server:
+            print('IN IF')
+            self.live_server_url = 'http://' + staging_server
 
     def tearDown(self):
         self.browser.quit()
