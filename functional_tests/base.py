@@ -31,9 +31,7 @@ class FunctionalTest(StaticLiveServerTestCase):
     def setUp(self):
         self.browser = webdriver.Chrome()
         staging_server = os.environ.get('STAGING_SERVER')
-        print(f'Staging Server: {staging_server}')
         if staging_server:
-            print('IN IF')
             self.live_server_url = 'http://' + staging_server
 
     def tearDown(self):
