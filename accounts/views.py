@@ -9,27 +9,22 @@ from .models import Token
 
 
 def send_login_email(request):
-    print(1)
     email = request.POST['email']
     token = Token.objects.create(email=email)
     url = request.build_absolute_uri(
         reverse('login') + '?token=' + str(token.uid)
     )
     message_body = f'Use this link to log in:\n\n{url}'
-    print(2)
-    print(email)
     send_mail(
         'Your login link for Superlists',
         message_body,
         'noreply@superlists',
         [email]
     )
-    print(3)
     messages.success(
         request,
         "Check your email, we've sent you a link you can use to log in.",
     )
-    print(4)
     return redirect('/')
 
 
