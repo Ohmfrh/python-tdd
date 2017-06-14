@@ -1,12 +1,14 @@
 [unit]
-Description=gunicorn daemon for tdd-staging
-After=network.target
+Description=Gunicorn server for SITENAME
 
 [Service]
+Restart=on-failure
 User=rlogin
 Group=www-data
 WorkingDirectory=/home/rlogin/sites/SITENAME/source
-ExecStart=/home/rlogin/sites/SITENAME/virtualenv/bin/gunicorn --bind unix:/tmp/SITENAME.sock superlists.wsgi:application
+ExecStart=/home/rlogin/sites/SITENAME/virtualenv/bin/gunicorn \
+    --bind unix:/tmp/SITENAME.socket \
+    superlists.wsgi:application
 
 [Install]
 WantedBy=multi-user.target
