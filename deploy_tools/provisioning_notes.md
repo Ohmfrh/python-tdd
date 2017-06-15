@@ -19,10 +19,12 @@ eg, on Ubuntu:
 * see nginx.template.conf
 * replace SITENAME with, eg, staging.my-domain.com
 
-## Upstart Job
+## Systemd Service
 
-* see gunicorn-upstart.template.conf
+* see gunicorn-systemd.template.service
 * replace SITENAME with, eg, staging.my-domain.com
+* replace EMAIL\_PLACEHOLDER with email
+* replace EMAIL\_PASSWORD\_PLACEHOLDER with password
 
 ## Folder structure:
 Assume we have a user account at /home/username
@@ -34,3 +36,5 @@ Assume we have a user account at /home/username
          ├── source
          ├── static
          └── virtualenv
+
+
