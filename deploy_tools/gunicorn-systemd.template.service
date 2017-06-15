@@ -4,6 +4,8 @@ Description=Gunicorn server for SITENAME
 [Service]
 Restart=on-failure
 User=USER
+Environment=EMAIL=EMAIL_PLACEHOLDER
+Environment=EMAIL_PASSWORD=EMAIL_PASSWORD_PLACEHOLDER
 Group=www-data
 WorkingDirectory=/home/USER/sites/SITENAME/source
 ExecStart=/home/USER/sites/SITENAME/virtualenv/bin/gunicorn \
