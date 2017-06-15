@@ -161,4 +161,4 @@ EMAIL_PORT = 587
 
 #DBBackups Config
 DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
-DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, '../database'}
+DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, '../database')}
