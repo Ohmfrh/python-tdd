@@ -6,13 +6,15 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 from django.utils.html import escape
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 from lists.views import home_page
 from lists.models import Item, List
 from lists.forms import (
-    EMPTY_ITEM_ERROR, DUPLICATE_ITEM_ERROR,
-    ItemForm, ExistingListItemForm
-)
+        EMPTY_ITEM_ERROR, DUPLICATE_ITEM_ERROR,
+        ItemForm, ExistingListItemForm
+        )
 
 
 class HomePageTest(TestCase):
@@ -61,9 +63,9 @@ class ListViewTest(TestCase):
         correct_list = List.objects.create()
 
         self.client.post(
-            f'/lists/{correct_list.id}/',
-            data={'text': 'A new item for an existing list'},
-        )
+                f'/lists/{correct_list.id}/',
+                data={'text': 'A new item for an existing list'},
+                )
 
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
@@ -75,20 +77,20 @@ class ListViewTest(TestCase):
         correct_list = List.objects.create()
 
         response = self.client.post(
-            f'/lists/{correct_list.id}/',
-            data={'text': 'A new item for an existing list'}
-        )
+                f'/lists/{correct_list.id}/',
+                data={'text': 'A new item for an existing list'}
+                )
         self.assertRedirects(response, f'/lists/{correct_list.id}/')
 
     def post_invalid_input(self):
         list_ = List.objects.create()
         return self.client.post(
-            f'/lists/{list_.id}/',
-            data={'text': ''}
-        )
+                f'/lists/{list_.id}/',
+                data={'text': ''}
+                )
 
-    def test_for_invalid_input_nothing_saved_to_db(self):
-        self.post_invalid_input()
+        def test_for_invalid_input_nothing_saved_to_db(self):
+            self.post_invalid_input()
         self.assertEqual(Item.objects.count(), 0)
 
     def test_for_invalid_input_renders_list_template(self):
@@ -103,15 +105,14 @@ class ListViewTest(TestCase):
     def test_for_invalid_input_shows_error_on_page(self):
         response = self.post_invalid_input()
         self.assertContains(response, escape(EMPTY_ITEM_ERROR))
-    
-    @skip
+
     def test_duplicate_item_validation_errors_end_up_on_lists_page(self):
         list1 = List.objects.create()
         item1 = Item.objects.create(list=list1, text='textey')
         response = self.client.post(
-            f'/lists/{list1.id}/',
-            data={'text': 'textey'}
-        )
+                f'/lists/{list1.id}/',
+                data={'text': 'textey'}
+                )
         expected_error = escape("You've already got this in your list")
         self.assertContains(response, expected_error)
         self.assertTemplateUsed(response, 'list.html')
@@ -128,9 +129,9 @@ class NewListTest(TestCase):
 
     def test_saving_a_POST_request(self):
         self.client.post(
-            '/lists/new',
-            data={'text': 'A new list item'}
-        )
+                '/lists/new',
+                data={'text': 'A new list item'}
+                )
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'A new list item')
@@ -138,9 +139,9 @@ class NewListTest(TestCase):
 
     def test_redirects_after_POST(self):
         response = self.client.post(
-            '/lists/new',
-            data={'text': 'A new list item'}
-        )
+                '/lists/new',
+                data={'text': 'A new list item'}
+                )
         new_list = List.objects.first()
         self.assertRedirects(response, f'/lists/{new_list.pk}/')
 
@@ -166,6 +167,19 @@ class NewListTest(TestCase):
 class MyListsTest(TestCase):
 
     def test_my_lists_url_renders_my_list_template(self):
+        User.objects.create(email='a@b.com')
         response = self.client.get('/lists/users/a@b.com/')
         self.assertTemplateUsed(response, 'my_lists.html')
 
+    def test_passes_correct_owner_to_template(self):
+        User.objects.create(email='wrong@owner.com')
+        correct_user = User.objects.create(email='a@b.com')
+        response = self.client.get('/lists/users/a@b.com/')
+        self.assertEqual(response.context['owner'], correct_user)
+
+    def test_list_owner_is_saved_if_user_is_authenticated(self):
+        user = User.objects.create(email='a@b.c')
+        self.client.force_login(user)
+        self.client.post('/lists/new', data={'text': 'new item'})
+        list_ = List.objects.first()
+        self.assertEqual(list_.owner, user)
