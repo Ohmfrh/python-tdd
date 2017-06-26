@@ -14,6 +14,9 @@ class User(models.Model):
     is_anonymous = False
     is_authenticated = True
 
+    def __str__(self):
+        return self.email
+
 
 class Token(models.Model):
     email = models.EmailField()

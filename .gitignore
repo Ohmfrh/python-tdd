@@ -4,3 +4,4 @@ __pycache__
 *.swp
 geckodriver.log
 functional_tests/screendumps
+.idea/
